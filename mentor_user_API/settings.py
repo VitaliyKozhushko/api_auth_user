@@ -137,6 +137,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'users.User'
+
 sign_key = secrets.token_urlsafe(64)
 
 SIMPLE_JWT = {
