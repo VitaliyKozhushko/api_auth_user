@@ -28,7 +28,7 @@ class RegistrationView(generics.CreateAPIView):
     return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
 class UsersViewSet(viewsets.ReadOnlyModelViewSet):
-  queryset = User.objects.all()
+  queryset = User.objects.filter(is_superuser=False)
   serializer_class = UserSerializer
   permission_classes = [IsAuthenticated]
   filter_backends = [DjangoFilterBackend]
@@ -45,4 +45,4 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
       'data':serializer.data
     }
 
-    return response_data
+    return Response(response_data)
