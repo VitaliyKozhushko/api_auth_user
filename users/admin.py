@@ -7,4 +7,8 @@ class UserAdmin(BaseUserAdmin):
   search_fields = ('username', 'phone', 'email')
   list_filter = ('is_mentor',)
 
+  fieldsets = BaseUserAdmin.fieldsets + (
+    ('Mentor info', {'fields': ('is_mentor',)}),
+  )
+
 admin.site.register(User, UserAdmin)
