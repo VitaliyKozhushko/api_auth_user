@@ -22,6 +22,7 @@ from rest_framework_simplejwt.views import (
 )
 from rest_framework import routers
 from users.views import RegistrationView, UsersViewSet
+from authorization.views import LogoutView
 
 router = routers.DefaultRouter()
 router.register(r'users', UsersViewSet)
@@ -29,7 +30,8 @@ router.register(r'users', UsersViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/logout/', LogoutView.as_view(), name = 'logout'),
     path('api/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/registration/', RegistrationView.as_view(), name = 'registration')
 ]

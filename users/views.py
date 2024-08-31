@@ -1,10 +1,9 @@
-from django_filters.rest_framework import DjangoFilterBackend
-
 from .models import User
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import RegisterSerializer, UserSerializer
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 class RegistrationView(generics.CreateAPIView):
   queryset = User.objects.all()
