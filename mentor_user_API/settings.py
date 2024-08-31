@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mentor_user_API.custom_middleware.RateLimitMiddleware'
 ]
 
 ROOT_URLCONF = env('ROOT_URLCONF')
@@ -150,6 +151,13 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': sign_key,
     'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1'
+    }
 }
 
 # Internationalization

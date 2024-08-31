@@ -3,6 +3,8 @@ from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import RegisterSerializer, UserSerializer, ActualUserSerializer, ChangePasswordSerializer
 from rest_framework.response import Response
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 class RegistrationView(generics.CreateAPIView):
   queryset = User.objects.all()
@@ -32,6 +34,7 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
   permission_classes = [IsAuthenticated]
   http_method_names = ['get']
 
+  @method_decorator(cache_page(60 * 15))
   def list(self, requset, *args, **kwargs):
     queryset = self.queryset
     serializer = self.get_serializer(queryset, many=True)
