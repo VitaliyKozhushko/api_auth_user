@@ -48,3 +48,21 @@ class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
     fields = ['username', 'is_mentor']
+
+class ActualUserSerializer(serializers.ModelSerializer):
+  username = serializers.CharField(required=False)
+
+  class Meta:
+    model = User
+    fields = ['username', 'phone', 'email', 'is_mentor']
+
+  def update(self, instance, validated_data):
+    for attr, value in validated_data.items():
+      setattr(instance, attr, value)
+
+    instance.save()
+    return instance
+
+class ChangePasswordSerializer(serializers.Serializer):
+  old_password = serializers.CharField(required=True, write_only=True)
+  new_password = serializers.CharField(required=True, write_only=True)

@@ -1,9 +1,8 @@
 from .models import User
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, ActualUserSerializer, ChangePasswordSerializer
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
 
 class RegistrationView(generics.CreateAPIView):
   queryset = User.objects.all()
@@ -31,8 +30,6 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
   queryset = User.objects.filter(is_superuser=False)
   serializer_class = UserSerializer
   permission_classes = [IsAuthenticated]
-  filter_backends = [DjangoFilterBackend]
-  filterset_fields = ['id']
   http_method_names = ['get']
 
   def list(self, requset, *args, **kwargs):
@@ -46,3 +43,36 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     }
 
     return Response(response_data)
+
+class UserDetailView(generics.RetrieveUpdateAPIView):
+  queryset = User.objects.all()
+  serializer_class = ActualUserSerializer
+  permission_classes = [IsAuthenticated]
+  lookup_field = 'id'
+
+  def get_object(self):
+    user = super().get_object()
+    if self.request.user != user:
+      raise PermissionError("Вы можете просматривать и редактировать только свои данные")
+    return user
+
+class ChangePasswordView(generics.UpdateAPIView):
+  model = User
+  serializer_class = ChangePasswordSerializer
+  permission_classes = [IsAuthenticated]
+
+  def get_object(self, queryset=None):
+    return self.request.user
+
+  def update(self, request, *args, **kwargs):
+    user = self.get_object()
+    serializer = self.get_serializer(data=request.data)
+
+    serializer.is_valid(raise_exception=True)
+
+    if not user.check_password(serializer.validated_data['old_password']):
+      return Response({'old_password': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.set_password(serializer.validated_data['new_password'])
+    user.save()
+    return Response({'detail': 'Пароль успешно изменен'}, status=status.HTTP_200_OK)
