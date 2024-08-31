@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mentor_user_API.custom_middleware.RateLimitMiddleware'
 ]
 
 ROOT_URLCONF = env('ROOT_URLCONF')
