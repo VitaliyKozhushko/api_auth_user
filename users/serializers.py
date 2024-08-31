@@ -27,7 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = User
-    fields =('username', 'phone', 'email', 'password', 'repeat_password')
+    fields =('username', 'phone', 'email', 'password', 'repeat_password', 'is_mentor')
 
   def validate(self, attrs):
     if attrs['password'] != attrs['repeat_password']:
@@ -38,7 +38,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     user = User(
       username=validated_data['username'],
       phone=validated_data.get('phone') or None,
-      email=validated_data.get('email') or None
+      email=validated_data.get('email') or None,
+      is_mentor=validated_data.get('is_mentor') or False
     )
     user.set_password(validated_data['password'])
     user.save()
@@ -51,10 +52,33 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ActualUserSerializer(serializers.ModelSerializer):
   username = serializers.CharField(required=False)
+  mentees = serializers.SerializerMethodField()
+  mentor_username = serializers.SerializerMethodField()
 
   class Meta:
     model = User
-    fields = ['username', 'phone', 'email', 'is_mentor']
+    fields = ['username', 'phone', 'email', 'is_mentor', 'mentees', 'mentor_username']
+
+  def get_mentees(self, obj):
+    if obj.is_mentor:
+      return [mentee.username for mentee in obj.mentees.all()]
+    return []
+
+  def get_mentor_username(self, obj):
+    if obj.mentor:
+      return obj.mentor.username
+    return None
+
+  def to_representation(self, instance):
+    representation = super().to_representation(instance)
+
+    if not instance.is_mentor:
+      representation.pop('mentees')
+
+    if instance.is_mentor:
+      representation.pop('mentor_username')
+
+    return representation
 
   def update(self, instance, validated_data):
     for attr, value in validated_data.items():
