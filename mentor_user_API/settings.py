@@ -50,8 +50,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
-    'django_filters'
+    'rest_framework_simplejwt.token_blacklist',
+    'authorization',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -107,8 +110,12 @@ WSGI_APPLICATION = 'mentor_user_API.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': env('HOST'),
+        'USER': env('USER'),
+        'PASSWORD': env('PASSWD'),
+        'NAME': env('DB'),
+        'PORT': env('PORT')
     }
 }
 
@@ -131,10 +138,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'users.User'
+
 sign_key = secrets.token_urlsafe(64)
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
