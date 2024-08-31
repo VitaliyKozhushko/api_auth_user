@@ -6,11 +6,10 @@ class User(AbstractUser):
   email = models.EmailField(unique=True)
   is_mentor = models.BooleanField()
 
-  REQUIRED_FIELDS = ['email']
-
-  ment_user = models.ManyToManyField(
+  ment_user = models.ForeignKey(
     'self',
-    symmetrical=False,
-    related_name='mentors',
+    on_delete=models.SET_NULL,
+    related_name='mentees',
+    nul=True,
     blank=True
   )
