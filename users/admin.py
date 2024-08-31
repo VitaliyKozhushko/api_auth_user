@@ -6,7 +6,7 @@ from django import forms
 
 class MentorForm(forms.ModelForm):
   mentees = forms.ModelMultipleChoiceField(
-    queryset=User.objects.filter(is_mentor=False, mentor__isnull=True),
+    queryset=User.objects.filter(is_mentor=False, mentor__isnull=True,is_superuser=False),
     required=False,
     widget=admin.widgets.FilteredSelectMultiple('Mentees', is_stacked=False)
   )
@@ -18,15 +18,11 @@ class MentorForm(forms.ModelForm):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     if self.instance.pk:
-        self.fields['mentees'].initial = self.instance.mentees.all()
-        print(self.instance.mentees.all())
+      self.fields['mentees'].initial = self.instance.mentees.all()
 
-  def clean_email(self):
-    email = self.cleaned_data.get('email')
-    if email:
-      if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
-        raise ValidationError('Пользователь с таким email уже существует.')
-    return email
+      mentees_queryset = User.objects.filter(is_mentor=False)
+      mentees_queryset = mentees_queryset.filter(mentor=None) | mentees_queryset.filter(mentor=self.instance)
+      self.fields['mentees'].queryset = mentees_queryset
 
   def save(self, commit=True):
     user = super().save(commit=False)
