@@ -30,8 +30,8 @@ router.register(r'users', UsersViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/logout/', LogoutView.as_view(), name = 'logout'),
-    path('api/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/registration/', RegistrationView.as_view(), name = 'registration')
+    path('api/login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/login/refresh', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/logout', LogoutView.as_view(), name = 'logout'),
+    path('api/registration', RegistrationView.as_view(), name = 'registration')
 ]
