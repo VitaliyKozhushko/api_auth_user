@@ -21,6 +21,9 @@ class User(AbstractUser):
     verbose_name = 'Пользователь'
     verbose_name_plural = 'Пользователи'
 
+  def __str__(self):
+    return self.username
+
 @receiver([post_save, post_delete], sender=User)
 def clear_user_cache(sender, **kwargs):
   cache.delete('views.decorators.cache.cache_page.viewset_UsersViewSet_list')

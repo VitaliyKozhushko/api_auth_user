@@ -24,7 +24,7 @@ class RegistrationView(generics.CreateAPIView):
         'login': user.username,
         'phone': user.phone,
         'email': user.email,
-        'is_mentor': user.is_mentor
+        'is_mentor': user.is_mentor,
       }
     }
     return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)

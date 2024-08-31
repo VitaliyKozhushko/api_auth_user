@@ -52,10 +52,33 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ActualUserSerializer(serializers.ModelSerializer):
   username = serializers.CharField(required=False)
+  mentees = serializers.SerializerMethodField()
+  mentor_username = serializers.SerializerMethodField()
 
   class Meta:
     model = User
-    fields = ['username', 'phone', 'email', 'is_mentor']
+    fields = ['username', 'phone', 'email', 'is_mentor', 'mentees', 'mentor_username']
+
+  def get_mentees(self, obj):
+    if obj.is_mentor:
+      return [mentee.username for mentee in obj.mentees.all()]
+    return []
+
+  def get_mentor_username(self, obj):
+    if obj.mentor:
+      return obj.mentor.username
+    return None
+
+  def to_representation(self, instance):
+    representation = super().to_representation(instance)
+
+    if not instance.is_mentor:
+      representation.pop('mentees')
+
+    if instance.is_mentor:
+      representation.pop('mentor_username')
+
+    return representation
 
   def update(self, instance, validated_data):
     for attr, value in validated_data.items():
