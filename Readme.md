@@ -59,7 +59,7 @@ git clone https://github.com/VitaliyKozhushko/mentor_user_API.git
     python manage.py migrate
     python manage.py runserver
     ```
-   - либо с помощью Docker
+   - либо с помощью Docker (суперпользователь будет автоматически создан - login: admin, password - admin)
     ```
     docker compose up --build -d
     ```
