@@ -18,6 +18,7 @@ class MentorForm(forms.ModelForm):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     if self.instance.pk:
+      self.was_mentor = self.instance.is_mentor
       self.fields['mentees'].initial = self.instance.mentees.all()
 
       mentees_queryset = User.objects.filter(is_mentor=False)
@@ -28,11 +29,18 @@ class MentorForm(forms.ModelForm):
     user = super().save(commit=False)
     user.save()
 
-    User.objects.filter(mentor=self.instance).update(mentor=None)
+    if self.was_mentor and not user.is_mentor:
+      mentees = User.objects.filter(mentor=user)
 
-    for mentee in self.cleaned_data.get('mentees', []):
-      mentee.mentor = self.instance
-      mentee.save()
+      for mentee in mentees:
+        mentee.mentor = None
+        mentee.save()
+    else:
+      User.objects.filter(mentor=self.instance).update(mentor=None)
+
+      for mentee in self.cleaned_data.get('mentees', []):
+        mentee.mentor = self.instance
+        mentee.save()
 
     return user
 
